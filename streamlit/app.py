@@ -45,12 +45,12 @@ def add_javascript():
 #alterar
 st.set_page_config(
    page_title="Blue Guardian",
-   page_icon="logo.jpeg",
+   page_icon="logo.jpg",
    layout="wide",
    initial_sidebar_state="expanded"
 )
 
-logo_path = "logo.jpeg"
+logo_path = "logo.jpg"
 
 def preprocess_user_message(message):
     """
