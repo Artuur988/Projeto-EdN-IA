@@ -75,7 +75,7 @@ def get_boto3_client(service_name, region_name='us-east-1', profile_name=''):
         print("ATENÇÃO: Verifique se o IAM Role está corretamente associado à instância EC2.")
         return None
 
-def query_bedrock(message, session_id="", model_params=None, context=""):
+def query_bedrock(message, session_id="", model_params=None, context="", conversation_history=None):
     """
     Envia uma mensagem para o Amazon Bedrock com parâmetros de modelo específicos.
     """
@@ -84,8 +84,8 @@ def query_bedrock(message, session_id="", model_params=None, context=""):
         model_params = {
             "temperature": 0.4,
             "top_p": 0.85,
-            "top_k": 60,
-            "max_tokens": 400,
+            "top_k": 300,
+            "max_tokens": 200,
             "response_format": {"type": "text"}
         }
     
@@ -98,7 +98,9 @@ def query_bedrock(message, session_id="", model_params=None, context=""):
         }
     
     try:
-        prompt = generate_chat_prompt(message, context=context)
+        prompt = generate_chat_prompt(message, conversation_history=conversation_history, context=context)
+        
+        # resto do código permanece igual...
         
         body = json.dumps({
             "anthropic_version": "bedrock-2023-05-31",
@@ -330,7 +332,7 @@ def handle_message():
                     else:
                         combined_context = rag_context
                     
-                    result = query_bedrock(user_message, current_session_id, context=combined_context)
+                    result = query_bedrock(user_message, current_session_id, context=combined_context, conversation_history=st.session_state.messages)
                 
                 if result:
                     assistant_message = result.get('answer', 'Não foi possível obter uma resposta.')
@@ -466,7 +468,7 @@ def regenerate_message(index):
     status_placeholder.info("Regenerando resposta...")
     
     with st.spinner():
-        result = query_bedrock(user_message, st.session_state.session_id)
+        result = query_bedrock(user_message, st.session_state.session_id, conversation_history=st.session_state.messages)
         
     if result:
         new_response = result.get('answer', 'Não foi possível regenerar a resposta.')
@@ -583,6 +585,7 @@ st.markdown("""
     }
     
     .user-message {
+        position: fixed;
         background-color: #f0f2f6;
         border-radius: 0.5rem;
         align-self: flex-end;
@@ -803,7 +806,7 @@ def handle_message_with_input(user_input):
                 with st.spinner():
                     current_session_id = "" if is_first_message else st.session_state.session_id
                     rag_context = get_rag_context()
-                    result = query_bedrock(user_input, current_session_id, context=rag_context)
+                    result = query_bedrock(user_input, current_session_id, context=rag_context, conversation_history=st.session_state.messages)
                 
                 if result:
                     assistant_message = result.get('answer', 'Não foi possível obter uma resposta.')
@@ -892,7 +895,7 @@ if check_password():
         with col1:
             st.image(logo_path, width=50)
         with col2:
-            st.markdown('<h2 style="margin-top: 0;">Chat IA</h2>', unsafe_allow_html=True)
+            st.markdown('<h2 style="margin-top: 0;">BlueGuardian</h2>', unsafe_allow_html=True)
         
         st.divider()
         
@@ -900,7 +903,7 @@ if check_password():
         
         st.divider()
         
-        st.markdown("### Minhas Conversas")
+        st.markdown("### Histórico de  Conversas")
         for idx, chat in enumerate(st.session_state.chat_history):
             col1, col2 = st.columns([5, 1])
             with col1:
@@ -959,11 +962,11 @@ if check_password():
             col1, col2 = st.columns([10, 1])
             with col1:
                 st.markdown(f'<div class="chat-title">{st.session_state.chat_title}</div>', unsafe_allow_html=True)
-            with col2:
-                if st.button("✏️", help="Renomear conversa"):
-                    st.session_state.renaming = True
-                    st.session_state.new_chat_title = st.session_state.chat_title
-                    st.rerun()
+            # with col2:
+            #     if st.button("✏️", help="Renomear conversa"):
+            #         st.session_state.renaming = True
+            #         st.session_state.new_chat_title = st.session_state.chat_title
+            #         st.rerun()
         
         messages_container = st.container()
         
@@ -973,18 +976,17 @@ if check_password():
         
         st.markdown('<div class="input-container">', unsafe_allow_html=True)
 
-        col1, col2, col3 = st.columns([5, 1, 1])
+        col1, col2 = st.columns([5, 1])
 
         with col1:
             st.text_area("Mensagem", placeholder="Digite sua mensagem aqui...", key="user_input", 
                 height=70, label_visibility="collapsed")
+# ANEXAR ARQUIVO
+        # with col2:
+        #     file_to_send = st.file_uploader("Anexar arquivo", type=["pdf", "txt", "csv", "doc", "docx", "xls", "xlsx"], key="file_to_send", label_visibility="collapsed")
+        #     st.markdown('<div class="attach-icon" title="Anexar arquivo"><i class="fas fa-paperclip"></i></div>', unsafe_allow_html=True)
 
         with col2:
-            file_to_send = st.file_uploader("Anexar arquivo", type=["pdf", "txt", "csv", "doc", "docx", "xls", "xlsx"], 
-                                        key="file_to_send", label_visibility="collapsed")
-            st.markdown('<div class="attach-icon" title="Anexar arquivo"><i class="fas fa-paperclip"></i></div>', unsafe_allow_html=True)
-
-        with col3:
             if st.button("Enviar", key="send_button", use_container_width=True):
                 if st.session_state.user_input and st.session_state.user_input.strip():
                     handle_message()
