@@ -5,15 +5,12 @@ from datetime import datetime
 import os
 import pandas as pd
 import PyPDF2
-from functions import (
-    generate_chat_prompt, format_context, 
-    read_pdf_from_uploaded_file, read_txt_from_uploaded_file, read_csv_from_uploaded_file
-)
+
 PROFILE_NAME = os.environ.get('AWS_PROFILE', 'grupo12-edn174')
 
 def get_boto3_client(service_name, region_name='us-east-1', profile_name=''):
     """
-    Retorna um cliente do serviço AWS usando IAM Role da instância
+    Retorna um cliente do serviço AWS usando IAM Role da instância.
     """
     try:
         # Primeiro tenta usar o IAM Role (modo de produção)
