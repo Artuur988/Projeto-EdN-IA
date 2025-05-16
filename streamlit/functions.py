@@ -13,7 +13,7 @@ PROFILE_NAME = os.environ.get('AWS_PROFILE', 'grupo12-edn174')
 
 def get_boto3_client(service_name, region_name='us-east-1', profile_name=''):
     """
-    Retorna um cliente do serviço AWS usando IAM Role da instância.
+    Retorna um cliente do serviço AWS usando IAM Role da instância
     """
     try:
         # Primeiro tenta usar o IAM Role (modo de produção)
