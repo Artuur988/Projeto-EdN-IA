@@ -1,0 +1,46 @@
+# Arquivos gerados pelo Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info
+dist/
+build/
+sdist/
+wheelhouse/
+pip-wheel-metadata/
+*.manifest
+*.spec
+
+# Arquivos de ambiente virtual
+.venv/
+venv/
+env/
+ENV/
+pyvenv.cfg
+
+# Arquivos de desenvolvimento e depuração
+*.log
+*.pot
+*.dump
+*.jb* # Arquivos do JetBrains (IntelliJ, PyCharm)
+*.swp # Arquivos de swap do Vim
+.ropeproject/
+.mypy_cache/
+.dmypy_cache/
+.pyre_check/
+.pytest_cache/
+htmlcov/
+.tox/
+noxfile.py.log
+coverage*
+*.lcov
+.coverage
+report.xml
+
+# Arquivos de sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos de pacotes e dependências
+requirements
