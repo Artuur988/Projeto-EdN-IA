@@ -17,30 +17,30 @@ PROFILE_NAME = os.environ.get("AWS_PROFILE", "")
 
 INFERENCE_PROFILE_ARN = "arn:aws:bedrock:us-east-1:851614451056:inference-profile/us.anthropic.claude-3-5-sonnet-20241022-v2:0"
 
-def add_javascript():
-    """Adiciona JavaScript para melhorar a interação do usuário com o chat"""
-    js_code = """
-    <script>
-    // Fazer com que a tecla Enter submeta o formulário
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-            const textarea = document.querySelector('textarea');
-            if (textarea) {
-                textarea.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        const sendButton = document.querySelector('button[data-testid="baseButton-secondary"]');
-                        if (sendButton) {
-                            sendButton.click();
-                        }
-                    }
-                });
-            }
-        }, 1000); // Pequeno atraso para garantir que os elementos foram carregados
-    });
-    </script>
-    """
-    st.components.v1.html(js_code, height=0)
+# def add_javascript():
+#     """Adiciona JavaScript para melhorar a interação do usuário com o chat"""
+#     js_code = """
+#     <script>
+#     // Fazer com que a tecla Enter submeta o formulário
+#     document.addEventListener('DOMContentLoaded', function() {
+#         setTimeout(function() {
+#             const textarea = document.querySelector('textarea');
+#             if (textarea) {
+#                 textarea.addEventListener('keydown', function(e) {
+#                     if (e.key === 'Enter' && !e.shiftKey) {
+#                         e.preventDefault();
+#                         const sendButton = document.querySelector('button[data-testid="baseButton-secondary"]');
+#                         if (sendButton) {
+#                             sendButton.click();
+#                         }
+#                     }
+#                 });
+#             }
+#         }, 1000); // Pequeno atraso para garantir que os elementos foram carregados
+#     });
+#     </script>
+#     """
+#     st.components.v1.html(js_code, height=0)
 
 #alterar
 st.set_page_config(
@@ -50,7 +50,8 @@ st.set_page_config(
    initial_sidebar_state="expanded"
 )
 
-logo_path = "logo.jpg"
+logo_path = "streamlit/logo.jpg"
+logo_chat = "streamlit/escudoNoBackground.png"
 
 def preprocess_user_message(message):
     """
@@ -227,12 +228,32 @@ def check_password():
             </style>
         """, unsafe_allow_html=True)
 
-        st.markdown('<div class="login-form">', unsafe_allow_html=True)
-        st.markdown('<h1 class="login-title">Login</h1>', unsafe_allow_html=True)
-        
-        st.text_input("Usuário", key="username")
-        st.text_input("Senha", type="password", key="password")
-        st.button("Entrar", on_click=password_entered, key="login-button")
+# ================================== INICIO TELA DE LOGIN ==================================       
+        col1, col2, col3 = st.columns([3, 3, 3])  # Define proporções das colunas
+        with col2:  # Centraliza o container na coluna do meio
+            with st.container(height=700):
+                incol1, incol2, incol3 = st.columns([4, 3, 3])
+                with incol2:
+                    st.image(logo_path, width=150)
+                    st.markdown(
+                            """
+                            <style>
+                                img {
+                                    border-radius: 15px;
+                                }
+                            </style>
+                            """,
+                            unsafe_allow_html=True
+                        )
+
+                #st.markdown('<div class="login-form">', unsafe_allow_html=True)
+                st.markdown('<h1 class="login-title">BlueGuardian</h1>', unsafe_allow_html=True)
+                st.markdown('<h3 class="login-title">Monitorando hoje para preservar o amanhã!</h3>', unsafe_allow_html=True)
+            
+                st.text_input("Usuário", key="username")
+                st.text_input("Senha", type="password", key="password")
+                st.button("Entrar", on_click=password_entered, key="login-button", use_container_width=True, type='primary')
+# ================================== FIM TELA DE LOGIN ================================== 
         
         if st.session_state["login_attempt"] and not st.session_state["password_correct"]:
             st.error("Usuário ou senha incorretos")
@@ -314,7 +335,7 @@ def handle_message():
             
             is_first_message = len(st.session_state.messages) == 1
             
-            with st.chat_message("assistant", avatar=logo_path):
+            with st.chat_message("assistant", avatar=logo_chat):
                 typing_placeholder = st.empty()
                 typing_placeholder.markdown("_Digitando..._")
                 
@@ -373,58 +394,58 @@ def handle_message():
         else:
             st.session_state.user_input = ""
 
-def add_javascript():
-    """Adiciona JavaScript para melhorar a interação do usuário com o chat"""
-    js_code = """
-    <script>
-    // Fazer com que a tecla Enter submeta o formulário
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-            const textarea = document.querySelector('textarea');
-            if (textarea) {
-                textarea.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        const sendButton = document.querySelector('button[data-testid="baseButton-secondary"]');
-                        if (sendButton) {
-                            sendButton.click();
-                        }
-                    }
-                });
-            }
+# def add_javascript():
+#     """Adiciona JavaScript para melhorar a interação do usuário com o chat"""
+#     js_code = """
+#     <script>
+#     // Fazer com que a tecla Enter submeta o formulário
+#     document.addEventListener('DOMContentLoaded', function() {
+#         setTimeout(function() {
+#             const textarea = document.querySelector('textarea');
+#             if (textarea) {
+#                 textarea.addEventListener('keydown', function(e) {
+#                     if (e.key === 'Enter' && !e.shiftKey) {
+#                         e.preventDefault();
+#                         const sendButton = document.querySelector('button[data-testid="baseButton-secondary"]');
+#                         if (sendButton) {
+#                             sendButton.click();
+#                         }
+#                     }
+#                 });
+#             }
             
-            // Mostrar o nome do arquivo quando for anexado
-            const fileUploader = document.querySelector('.stFileUploader');
-            if (fileUploader) {
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.type === 'childList' && mutation.addedNodes.length) {
-                            const fileInfo = fileUploader.querySelector('.uploadedFileName');
-                            if (fileInfo) {
-                                const fileName = fileInfo.textContent.trim();
-                                // Adicionando uma mensagem ao lado do input
-                                const inputContainer = document.querySelector('.input-container');
-                                let fileStatus = document.querySelector('.file-attached');
+#             // Mostrar o nome do arquivo quando for anexado
+#             const fileUploader = document.querySelector('.stFileUploader');
+#             if (fileUploader) {
+#                 const observer = new MutationObserver(function(mutations) {
+#                     mutations.forEach(function(mutation) {
+#                         if (mutation.type === 'childList' && mutation.addedNodes.length) {
+#                             const fileInfo = fileUploader.querySelector('.uploadedFileName');
+#                             if (fileInfo) {
+#                                 const fileName = fileInfo.textContent.trim();
+#                                 // Adicionando uma mensagem ao lado do input
+#                                 const inputContainer = document.querySelector('.input-container');
+#                                 let fileStatus = document.querySelector('.file-attached');
                                 
-                                if (!fileStatus) {
-                                    fileStatus = document.createElement('div');
-                                    fileStatus.className = 'file-attached';
-                                    inputContainer.insertBefore(fileStatus, inputContainer.firstChild);
-                                }
+#                                 if (!fileStatus) {
+#                                     fileStatus = document.createElement('div');
+#                                     fileStatus.className = 'file-attached';
+#                                     inputContainer.insertBefore(fileStatus, inputContainer.firstChild);
+#                                 }
                                 
-                                fileStatus.innerHTML = '<i class="fas fa-paperclip"></i> ' + fileName;
-                            }
-                        }
-                    });
-                });
+#                                 fileStatus.innerHTML = '<i class="fas fa-paperclip"></i> ' + fileName;
+#                             }
+#                         }
+#                     });
+#                 });
                 
-                observer.observe(fileUploader, { childList: true, subtree: true });
-            }
-        }, 1000); // Pequeno atraso para garantir que os elementos foram carregados
-    });
-    </script>
-    """
-    st.components.v1.html(js_code, height=0)
+#                 observer.observe(fileUploader, { childList: true, subtree: true });
+#             }
+#         }, 1000); // Pequeno atraso para garantir que os elementos foram carregados
+#     });
+#     </script>
+#     """
+#     st.components.v1.html(js_code, height=0)
 
 def extract_title_from_response(response_text):
     """
@@ -554,6 +575,7 @@ def rename_chat():
         st.session_state.renaming = False
         st.rerun()
 
+# estilo inutil
 st.markdown("""
     <style>
     /* Estilo Geral */
@@ -582,6 +604,7 @@ st.markdown("""
         margin-bottom: 0.5rem;
         display: flex;
         flex-direction: column;
+        
     }
     
     .user-message {
@@ -799,7 +822,7 @@ def handle_message_with_input(user_input):
             
             is_first_message = len(st.session_state.messages) == 1
             
-            with st.chat_message("assistant", avatar=logo_path):
+            with st.chat_message("assistant", avatar=logo_chat):
                 typing_placeholder = st.empty()
                 typing_placeholder.markdown("_Digitando..._")
                 
@@ -839,7 +862,7 @@ def handle_message_with_input(user_input):
                 typing_placeholder.empty()
             
             st.rerun()
-
+# DEVERIA ESTAR DENTRO DA FUNCAO MAIN()
 if check_password():
     print("DEBUG AUTH: Verificando senha")
     if 'session_id' not in st.session_state:
@@ -856,7 +879,7 @@ if check_password():
         
     if 'current_chat_index' not in st.session_state:
         st.session_state.current_chat_index = 0
-        
+   # NOVA CONVERSA COM A DATA     
     if 'chat_title' not in st.session_state:
         st.session_state.chat_title = f"Nova Conversa ({datetime.now().strftime('%d/%m/%Y')})"
         
@@ -890,12 +913,30 @@ if check_password():
     if 'direct_text' not in st.session_state:
         st.session_state.direct_text = ""
 
+# ==============================   INICIO BARRA LATERAL ==============================================
     with st.sidebar:
-        col1, col2 = st.columns([1, 3])
-        with col1:
-            st.image(logo_path, width=50)
-        with col2:
-            st.markdown('<h2 style="margin-top: 0;">BlueGuardian</h2>', unsafe_allow_html=True)
+        sidcol1, sidcol2, sidcol3 = st.columns([1, 3, 1])
+        with sidcol2:
+            with st.container():
+                st.image(logo_path, width=130)
+                st.markdown(
+                            """
+                            <style>
+                                img {
+                                    border-radius: 15px;
+                                }
+                            </style>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                st.markdown('<h2 style="margin-top: 0; color: #4ED7F1;">BlueGuardian</h2>', unsafe_allow_html=True)
+
+        # col1, col2 = st.columns([1, 3])
+        # with col1:
+        #     st.image(logo_path, width=50)
+        # with col2:
+        #     st.markdown('<h2 style="margin-top: 0;">BlueGuardian</h2>', unsafe_allow_html=True)
+# ===============================================================================================
         
         st.divider()
         
@@ -917,6 +958,8 @@ if check_password():
     
         use_rag = st.checkbox("Usar Contexto Adicional (RAG)", value=st.session_state.use_rag)
         st.session_state.use_rag = use_rag
+
+# ==============================   FIM BARRA LATERAL ==============================================
 
         if use_rag:
             rag_source = st.radio(
@@ -944,14 +987,14 @@ if check_password():
                     key="direct_text"
                 )
             st.divider()
+# BOTAO COLOCADO NO LUGAR CERTO
+        if st.button("Logout", use_container_width=True):
+            logout()
 
-            if st.button("Logout", use_container_width=True):
-                logout()
-
-    main_col1, main_col2, main_col3 = st.columns([1, 10, 1])
+    main_col1, main_col2, main_col3 = st.columns([1, 20, 1])
     
     with main_col2:
-        add_javascript()
+        #add_javascript()
         if st.session_state.renaming:
             col1, col2 = st.columns([4, 1])
             with col1:
@@ -969,12 +1012,12 @@ if check_password():
             #         st.rerun()
         
         messages_container = st.container()
+        # inicio_principal
+        st.markdown("<div style='height: 250px;'></div>", unsafe_allow_html=True)
         
-        st.markdown("<div style='height: 120px;'></div>", unsafe_allow_html=True)
+        #st.markdown('<div class="input-container">', unsafe_allow_html=True)
         
-        st.markdown('<div class="input-container">', unsafe_allow_html=True)
-        
-        st.markdown('<div class="input-container">', unsafe_allow_html=True)
+        #st.markdown('<div class="input-container">', unsafe_allow_html=True)
 
         col1, col2 = st.columns([5, 1])
 
@@ -987,7 +1030,25 @@ if check_password():
         #     st.markdown('<div class="attach-icon" title="Anexar arquivo"><i class="fas fa-paperclip"></i></div>', unsafe_allow_html=True)
 
         with col2:
-            if st.button("Enviar", key="send_button", use_container_width=True):
+            st.markdown( # ESTILO PARA OS BOTOES
+                        """
+                        <style>
+                            div[data-testid="stButton"] > button {
+                                background-color: #0118D8; !important; /* Cor de fundo */
+                                color: white !important; /* Cor do texto */
+                                padding: 10px 20px;
+                                border-radius: 8px;
+                                font-size: 16px;
+                                cursor: pointer;
+                            }
+                            div[data-testid="stButton"] > button:hover {
+                                background-color: #1B56FD !important; /* Cor ao passar o mouse */
+                            }
+                        </style>
+                        """,
+                        unsafe_allow_html=True
+                        )
+            if st.button("Enviar", key="send_button", use_container_width=True, type='primary'):
                 if st.session_state.user_input and st.session_state.user_input.strip():
                     handle_message()
         
@@ -1029,6 +1090,6 @@ if check_password():
                                     regenerate_message(idx)
                         st.markdown('</div>', unsafe_allow_html=True)
                 else:
-                    with st.chat_message("assistant", avatar=logo_path):
+                    with st.chat_message("assistant", avatar=logo_chat):
                         st.write(message["content"])
                         st.markdown(f"<div class='message-time'>{message['time']}</div>", unsafe_allow_html=True)
